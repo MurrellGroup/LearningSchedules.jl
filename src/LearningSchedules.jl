@@ -67,11 +67,7 @@ savefig(pl, "test_lr_schedule.svg")
 
 function linear_decay_schedule(max_lr::Float32, min_lr::Float32, steps::Int)
     function f!(lrs::LearningRateSchedule)
-        if lrs.lr <= min_lr
-            lrs.lr = min_lr
-            return lrs.lr
-        end
-        lrs.lr = lrs.lr - (max_lr - min_lr)/steps
+        lrs.lr = max(min_lr, lrs.lr - (max_lr - min_lr)/steps)
         return lrs.lr
     end
     return LearningRateSchedule(max_lr, 1, f!)
