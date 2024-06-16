@@ -1,9 +1,9 @@
-abstract type AbstractSchedule{T <: AbstractFloat} end
+abstract type LearningRateSchedule{T <: AbstractFloat} end
 
-Base.IteratorSize(::Type{<:AbstractSchedule}) = Base.IsInfinite()
+Base.IteratorSize(::Type{<:LearningRateSchedule}) = Base.IsInfinite()
 
 """
-    LinearSchedule{T} <: AbstractSchedule{T}
+    LinearSchedule{T} <: LearningRateSchedule{T}
     LinearSchedule(initial::T, final::T, steps::Int)
 
 A linear learning rate schedule, decaying from `initial` to `final` over `steps` iterations.
@@ -13,7 +13,7 @@ A linear learning rate schedule, decaying from `initial` to `final` over `steps`
 - `final::T`: The final learning rate.
 - `steps::Int`: The number of steps to decay over.
 """
-struct LinearSchedule{T} <: AbstractSchedule{T}
+struct LinearSchedule{T} <: LearningRateSchedule{T}
     initial::T
     final::T
     steps::Int
@@ -26,10 +26,10 @@ function Base.iterate(schedule::LinearSchedule{T}, (rate, step)::Tuple{T, Int}=(
 end
 
 """
-    BurninSchedule{T} <: AbstractSchedule{T}
+    BurninSchedule{T} <: LearningRateSchedule{T}
     BurninSchedule(min::T, max::T, inflate::T, decay::T)
 
-A learning rate schedule with exponential inflation and exponential decay states.
+A learning rate schedule with exponential inflation and exponential decay stages.
 The rate starts at `min`, inflates exponentially to `max`, then decays exponentially to `min`.
 
 # Arguments
@@ -38,7 +38,7 @@ The rate starts at `min`, inflates exponentially to `max`, then decays exponenti
 - `inflate::T`: The inflation factor during stage 1.
 - `decay::T`: The decay factor during stage 2 (starts after max is reached).
 """
-struct BurninSchedule{T} <: AbstractSchedule{T}
+struct BurninSchedule{T} <: LearningRateSchedule{T}
     min::T
     max::T
     inflate::T
@@ -65,7 +65,7 @@ function Base.iterate(schedule::BurninSchedule{T}, (rate, stage)::Tuple{T, Int}=
 end
 
 """
-    BurninHyperbolicSchedule{T} <: AbstractSchedule{T}
+    BurninHyperbolicSchedule{T} <: LearningRateSchedule{T}
     BurninHyperbolicSchedule(min::T, max::T, inflate::T, decay::T, floor::T)
 
 A learning rate schedule with exponential inflation and hyperbolic decay stages.
@@ -78,7 +78,7 @@ The rate starts at `min`, inflates exponentially to `max`, then decays hyperboli
 - `decay::T`: The decay factor during stage 2 (starts after max is reached).
 - `floor::T`: idk ask Ben or look at the code lol
 """
-struct BurninHyperbolicSchedule{T} <: AbstractSchedule{T}
+struct BurninHyperbolicSchedule{T} <: LearningRateSchedule{T}
     min::T
     max::T
     inflate::T

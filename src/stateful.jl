@@ -1,10 +1,10 @@
 # binding the state to an iterator
 import Base.Iterators: Stateful
 
-(schedule::AbstractSchedule)() = Stateful(schedule)
+(schedule::LearningRateSchedule)() = Stateful(schedule)
 
 """
-    next_rate!(schedule::Stateful{<:AbstractSchedule})
+    next_rate!(schedule::Stateful{<:LearningRateSchedule})
 
 Update the schedule and return the next rate.
 
@@ -25,7 +25,7 @@ julia> next_rate!(schedule)
 const next_rate! = popfirst!
 
 """
-    next_rate(schedule::Stateful{<:AbstractSchedule})
+    next_rate(schedule::Stateful{<:LearningRateSchedule})
 
 See also: [`next_rate!`](@ref)
 
