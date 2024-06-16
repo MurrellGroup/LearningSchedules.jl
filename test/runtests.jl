@@ -2,5 +2,11 @@ using LearningSchedules
 using Test
 
 @testset "LearningSchedules.jl" begin
-    # Write your tests here.
+    
+    @testset "schedules.jl" begin
+    end
+
+    @testset "stateful.jl" begin
+    end
+
 end
