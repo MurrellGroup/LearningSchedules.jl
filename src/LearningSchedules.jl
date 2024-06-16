@@ -1,7 +1,7 @@
 module LearningSchedules
 
 include("schedules.jl")
-export LinearSchedule, BurninSchedule, BurninHyperbolicSchedule
+export Linear, Burnin, BurninHyperbolic
 
 include("stateful.jl")
 export Stateful, next_rate!, next_rate

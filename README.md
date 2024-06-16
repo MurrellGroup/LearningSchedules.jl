@@ -14,9 +14,9 @@ Schedules are iterable, and return the learning rate at each iteration. For exam
 ```julia
 julia> using LearningSchedules
 
-julia> schedule = LinearSchedule(1.0, 0.6, 4)
+julia> linear_schedule = Linear(1.0, 0.6, 4)
 
-julia> for (i, r) in zip(1:6, schedule) # would repeat infinitely without zipping
+julia> for (i, r) in zip(1:6, linear_schedule) # would repeat infinitely without zipping
            println(r)
        end
 1.0
@@ -24,21 +24,21 @@ julia> for (i, r) in zip(1:6, schedule) # would repeat infinitely without zippin
 0.8
 0.7
 0.6
-0.6 # the schedule repeats the final value
+0.6 # final value repeats infinitely
 ```
 
 In this package, schedules are *stateless*, meaning they are immutable and do not store any information about the current iteration. The schedule state is instead passed around in the underlying `iterate` calls. A state can still be binded to a schedule using `Iterators.Stateful` (which is exported by this package) like so:
 
 ```julia
-julia> schedule_with_state = Stateful(schedule);
+julia> linear_with_state = Stateful(linear_schedule);
 
-julia> next_rate(schedule_with_state) # alias for `peek`
+julia> next_rate(linear_with_state) # alias for `peek`
 1.0
 
-julia> next_rate!(schedule_with_state) # alias for `popfirst!`
+julia> next_rate!(linear_with_state) # alias for `popfirst!`
 1.0
 
-julia> next_rate!(schedule_with_state)
+julia> next_rate!(linear_with_state)
 0.9
 ```
 

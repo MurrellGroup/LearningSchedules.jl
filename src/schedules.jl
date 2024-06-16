@@ -3,8 +3,8 @@ abstract type LearningRateSchedule{T <: AbstractFloat} end
 Base.IteratorSize(::Type{<:LearningRateSchedule}) = Base.IsInfinite()
 
 """
-    LinearSchedule{T} <: LearningRateSchedule{T}
-    LinearSchedule(initial::T, final::T, steps::Int)
+    Linear{T} <: LearningRateSchedule{T}
+    Linear(initial::T, final::T, steps::Int)
 
 A linear learning rate schedule, decaying from `initial` to `final` over `steps` iterations.
 
@@ -13,21 +13,21 @@ A linear learning rate schedule, decaying from `initial` to `final` over `steps`
 - `final::T`: The final learning rate.
 - `steps::Int`: The number of steps to decay over.
 """
-struct LinearSchedule{T} <: LearningRateSchedule{T}
+struct Linear{T} <: LearningRateSchedule{T}
     initial::T
     final::T
     steps::Int
 end
 
-function Base.iterate(schedule::LinearSchedule{T}, (rate, step)::Tuple{T, Int}=(schedule.initial, 0)) where T
+function Base.iterate(schedule::Linear{T}, (rate, step)::Tuple{T, Int}=(schedule.initial, 0)) where T
     x = clamp(step / schedule.steps, 0, 1)
     rate = schedule.initial + (schedule.final - schedule.initial) * x
     return (rate, (rate, step + 1))
 end
 
 """
-    BurninSchedule{T} <: LearningRateSchedule{T}
-    BurninSchedule(min::T, max::T, inflate::T, decay::T)
+    Burnin{T} <: LearningRateSchedule{T}
+    Burnin(min::T, max::T, inflate::T, decay::T)
 
 A learning rate schedule with exponential inflation and exponential decay stages.
 The rate starts at `min`, inflates exponentially to `max`, then decays exponentially to `min`.
@@ -38,14 +38,14 @@ The rate starts at `min`, inflates exponentially to `max`, then decays exponenti
 - `inflate::T`: The inflation factor during stage 1.
 - `decay::T`: The decay factor during stage 2 (starts after max is reached).
 """
-struct BurninSchedule{T} <: LearningRateSchedule{T}
+struct Burnin{T} <: LearningRateSchedule{T}
     min::T
     max::T
     inflate::T
     decay::T
 end
 
-function Base.iterate(schedule::BurninSchedule{T}, (rate, stage)::Tuple{T, Int}=(schedule.min, 0)) where T
+function Base.iterate(schedule::Burnin{T}, (rate, stage)::Tuple{T, Int}=(schedule.min, 0)) where T
     if stage == 0
         stage = 1
     elseif stage == 1
@@ -65,8 +65,8 @@ function Base.iterate(schedule::BurninSchedule{T}, (rate, stage)::Tuple{T, Int}=
 end
 
 """
-    BurninHyperbolicSchedule{T} <: LearningRateSchedule{T}
-    BurninHyperbolicSchedule(min::T, max::T, inflate::T, decay::T, floor::T)
+    BurninHyperbolic{T} <: LearningRateSchedule{T}
+    BurninHyperbolic(min::T, max::T, inflate::T, decay::T, floor::T)
 
 A learning rate schedule with exponential inflation and hyperbolic decay stages.
 The rate starts at `min`, inflates exponentially to `max`, then decays hyperbolically to `min`.
@@ -78,7 +78,7 @@ The rate starts at `min`, inflates exponentially to `max`, then decays hyperboli
 - `decay::T`: The decay factor during stage 2 (starts after max is reached).
 - `floor::T`: idk ask Ben or look at the code lol
 """
-struct BurninHyperbolicSchedule{T} <: LearningRateSchedule{T}
+struct BurninHyperbolic{T} <: LearningRateSchedule{T}
     min::T
     max::T
     inflate::T
@@ -86,7 +86,7 @@ struct BurninHyperbolicSchedule{T} <: LearningRateSchedule{T}
     floor::T
 end
 
-function Base.iterate(schedule::BurninHyperbolicSchedule{T}, (rate, stage)::Tuple{T, Int}=(schedule.min, 0)) where T
+function Base.iterate(schedule::BurninHyperbolic{T}, (rate, stage)::Tuple{T, Int}=(schedule.min, 0)) where T
     if stage == 0
         stage = 1
     elseif stage == 1

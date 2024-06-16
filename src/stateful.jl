@@ -13,7 +13,7 @@ See also: [`next_rate`](@ref)
 # Examples
 
 ```jldoctest
-julia> schedule = Stateful(LinearSchedule(1.0, 0.0, 10));
+julia> schedule = Stateful(Linear(1.0, 0.0, 10));
 
 julia> next_rate!(schedule)
 1.0
@@ -32,7 +32,7 @@ See also: [`next_rate!`](@ref)
 # Examples
 
 ```jldoctest
-julia> schedule = Stateful(LinearSchedule(1.0, 0.0, 10));
+julia> schedule = Stateful(Linear(1.0, 0.0, 10));
 
 julia> next_rate(schedule)
 1.0
