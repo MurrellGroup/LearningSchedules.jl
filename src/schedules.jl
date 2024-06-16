@@ -19,10 +19,10 @@ struct LinearSchedule{T} <: AbstractSchedule{T}
     steps::Int
 end
 
-function Base.iterate(schedule::LinearSchedule{T}, (rate, state)::Tuple{T, Int}=(schedule.initial, 0)) where T
-    x = clamp(state / schedule.steps, 0, 1)
+function Base.iterate(schedule::LinearSchedule{T}, (rate, step)::Tuple{T, Int}=(schedule.initial, 0)) where T
+    x = clamp(step / schedule.steps, 0, 1)
     rate = schedule.initial + (schedule.final - schedule.initial) * x
-    return (rate, (rate, state + 1))
+    return (rate, (rate, step + 1))
 end
 
 """
@@ -45,28 +45,30 @@ struct BurninSchedule{T} <: AbstractSchedule{T}
     decay::T
 end
 
-function Base.iterate(schedule::BurninSchedule{T}, (rate, state)::Tuple{T, Int}=(schedule.min, 1)) where T
-    if state == 1
+function Base.iterate(schedule::BurninSchedule{T}, (rate, stage)::Tuple{T, Int}=(schedule.min, 0)) where T
+    if stage == 0
+        stage = 1
+    elseif stage == 1
         rate *= schedule.inflate
         if rate ≥ schedule.max
             rate = schedule.max
-            state = 2
+            stage = 2
         end
-    elseif state == 2
+    elseif stage == 2
         rate *= schedule.decay
         if rate ≤ schedule.min
             rate = schedule.min
-            state = 3
+            stage = 3
         end
     end
-    return (rate, (rate, state))
+    return (rate, (rate, stage))
 end
 
 """
     BurninHyperbolicSchedule{T} <: AbstractSchedule{T}
     BurninHyperbolicSchedule(min::T, max::T, inflate::T, decay::T, floor::T)
 
-A learning rate schedule with exponential inflation and hyperbolic decay states.
+A learning rate schedule with exponential inflation and hyperbolic decay stages.
 The rate starts at `min`, inflates exponentially to `max`, then decays hyperbolically to `min`.
 
 # Arguments
@@ -74,7 +76,7 @@ The rate starts at `min`, inflates exponentially to `max`, then decays hyperboli
 - `max::T`: The maximum learning rate.
 - `inflate::T`: The inflation factor during stage 1.
 - `decay::T`: The decay factor during stage 2 (starts after max is reached).
-- `floor::T = zero(T)`: The floor value for the decay.
+- `floor::T`: idk ask Ben or look at the code lol
 """
 struct BurninHyperbolicSchedule{T} <: AbstractSchedule{T}
     min::T
@@ -84,19 +86,21 @@ struct BurninHyperbolicSchedule{T} <: AbstractSchedule{T}
     floor::T
 end
 
-function Base.iterate(schedule::BurninHyperbolicSchedule{T}, (rate, state)::Tuple{T, Int}=(schedule.min, 1)) where T
-    if state == 1
+function Base.iterate(schedule::BurninHyperbolicSchedule{T}, (rate, stage)::Tuple{T, Int}=(schedule.min, 0)) where T
+    if stage == 0
+        stage = 1
+    elseif stage == 1
         rate *= schedule.inflate
         if rate ≥ schedule.max
             rate = schedule.max
-            state = 2
+            stage = 2
         end
-    elseif state == 2
+    elseif stage == 2
         rate = (rate - schedule.floor) / (one(T) + schedule.decay * (rate - schedule.floor))
         if rate ≤ schedule.min
             rate = schedule.min
-            state = 3
+            stage = 3
         end
     end
-    return (rate, (rate, state))
+    return (rate, (rate, stage))
 end
