@@ -9,7 +9,7 @@ This Julia package provides learning rate schedule types for training deep learn
 
 # Examples
 
-Schedules are *iterables* that return the learning rate at each iteration. For example, a linear schedule that decreases the learning rate from 1.0 to 0.6 with 4 steps can be created as follows:
+Schedules are iterable, and return the learning rate at each iteration. For example, a linear schedule that decreases the learning rate from 1.0 to 0.6 with 4 steps can be created and used as follows:
 
 ```julia
 julia> using LearningSchedules
