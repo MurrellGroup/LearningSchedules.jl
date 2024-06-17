@@ -30,16 +30,16 @@ julia> for (i, r) in zip(1:6, linear_schedule) # would repeat infinitely without
 In this package, schedules are *stateless*, meaning they are immutable and do not store any information about the current iteration. The schedule state is instead passed around in the underlying `iterate` calls. A state can still be binded to a schedule using `Iterators.Stateful` (which is exported by this package) like so:
 
 ```julia
-julia> linear_with_state = Stateful(linear_schedule);
+julia> linear_with_state = linear_schedule(); # creates a stateful iterator from the linear schedule
 
-julia> next_rate(linear_with_state) # alias for `peek`
+julia> next_rate(linear_with_state)
 1.0
 
-julia> next_rate!(linear_with_state) # alias for `popfirst!`
+julia> next_rate!(linear_with_state)
 1.0
 
 julia> next_rate!(linear_with_state)
 0.9
 ```
 
-For more types of schedules, see the [documentation](https://MurrellGroup.github.io/LearningSchedules.jl/stable/).
+For more schedule types, see the [documentation](https://MurrellGroup.github.io/LearningSchedules.jl/stable/).

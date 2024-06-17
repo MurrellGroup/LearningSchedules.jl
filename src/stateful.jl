@@ -19,16 +19,16 @@ See also: [`next_rate`](@ref)
 # Examples
 
 ```jldoctest
-julia> schedule = Stateful(Linear(1.0, 0.0, 10));
+julia> linear_with_state = Linear(1.0, 0.0, 10)(); # stateful
 
-julia> next_rate!(schedule)
+julia> next_rate!(linear_with_state)
 1.0
 
-julia> next_rate!(schedule)
+julia> next_rate!(linear_with_state)
 0.9
 ```
 """
-const next_rate! = popfirst!
+next_rate!(schedule::Stateful{<:LearningRateSchedule}) = popfirst!(schedule)
 
 """
     next_rate(schedule::Stateful{<:LearningRateSchedule})
@@ -38,16 +38,16 @@ See also: [`next_rate!`](@ref)
 # Examples
 
 ```jldoctest
-julia> schedule = Stateful(Linear(1.0, 0.0, 10));
+julia> linear_with_state = Linear(1.0, 0.0, 10)(); # stateful
 
-julia> next_rate(schedule)
+julia> next_rate(linear_with_state)
 1.0
 
-julia> next_rate!(schedule)
+julia> next_rate!(linear_with_state)
 1.0
 
-julia> next_rate(schedule)
+julia> next_rate(linear_with_state)
 0.9
 ```
 """
-const next_rate = peek
+next_rate(schedule::Stateful{<:LearningRateSchedule}) = peek(schedule)
