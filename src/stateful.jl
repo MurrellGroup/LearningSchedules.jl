@@ -3,6 +3,12 @@ import Base.Iterators: Stateful
 
 (schedule::LearningRateSchedule)() = Stateful(schedule)
 
+function (schedule::LearningRateSchedule)(initial_state)
+    stateful = schedule()
+    stateful.nextvalstate = initial_state
+    return stateful
+end
+
 """
     next_rate!(schedule::Stateful{<:LearningRateSchedule})
 
