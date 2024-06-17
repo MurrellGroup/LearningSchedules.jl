@@ -2,8 +2,10 @@ abstract type LearningRateSchedule{T <: AbstractFloat} end
 
 Base.IteratorSize(::Type{<:LearningRateSchedule}) = Base.IsInfinite()
 
-abstract type StepBased{T} <: LearningRateSchedule{T} end
+initial_state(::LearningRateSchedule) = error("not defined for abstract type")
+Base.iterate(schedule::LearningRateSchedule) = iterate(schedule, initial_state(schedule))
 
+abstract type StepBased{T} <: LearningRateSchedule{T} end
 abstract type TimeBased{T} <: LearningRateSchedule{T} end
 
 """
@@ -23,7 +25,9 @@ struct Linear{T} <: StepBased{T}
     steps::Int
 end
 
-function Base.iterate(schedule::Linear{T}, (rate, step)::Tuple{T, Int}=(schedule.initial, 0)) where T
+initial_state(schedule::Linear) = (schedule.initial, 0)
+
+function Base.iterate(schedule::Linear{T}, (rate, step)::Tuple{T, Int}) where T
     x = clamp(step / schedule.steps, 0, 1)
     rate = schedule.initial + (schedule.final - schedule.initial) * x
     return (rate, (rate, step + 1))
@@ -49,7 +53,9 @@ struct Burnin{T} <: TimeBased{T}
     decay::T
 end
 
-function Base.iterate(schedule::Burnin{T}, (rate, stage)::Tuple{T, Int}=(schedule.min, 0)) where T
+initial_state(schedule::Burnin) = (schedule.min, 0)
+
+function Base.iterate(schedule::Burnin{T}, (rate, stage)::Tuple{T, Int}) where T
     if stage == 0
         stage = 1
     elseif stage == 1
@@ -90,7 +96,9 @@ struct BurninHyperbolic{T} <: TimeBased{T}
     floor::T
 end
 
-function Base.iterate(schedule::BurninHyperbolic{T}, (rate, stage)::Tuple{T, Int}=(schedule.min, 0)) where T
+initial_state(schedule::BurninHyperbolic) = (schedule.min, 0)
+
+function Base.iterate(schedule::BurninHyperbolic{T}, (rate, stage)::Tuple{T, Int}) where T
     if stage == 0
         stage = 1
     elseif stage == 1

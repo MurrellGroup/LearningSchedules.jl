@@ -3,9 +3,9 @@ import Base.Iterators: Stateful
 
 (schedule::LearningRateSchedule)() = Stateful(schedule)
 
-function (schedule::LearningRateSchedule)(initial_state)
+function (schedule::LearningRateSchedule)(state)
     stateful = schedule()
-    stateful.nextvalstate = initial_state
+    stateful.nextvalstate = state
     return stateful
 end
 
