@@ -2,8 +2,12 @@ abstract type LearningRateSchedule{T <: AbstractFloat} end
 
 Base.IteratorSize(::Type{<:LearningRateSchedule}) = Base.IsInfinite()
 
+abstract type StepBased{T} <: LearningRateSchedule{T} end
+
+abstract type TimeBased{T} <: LearningRateSchedule{T} end
+
 """
-    Linear{T} <: LearningRateSchedule{T}
+    Linear{T} <: StepBased{T}
     Linear(initial::T, final::T, steps::Int)
 
 A linear learning rate schedule, decaying from `initial` to `final` over `steps` iterations.
@@ -13,7 +17,7 @@ A linear learning rate schedule, decaying from `initial` to `final` over `steps`
 - `final::T`: The final learning rate.
 - `steps::Int`: The number of steps to decay over.
 """
-struct Linear{T} <: LearningRateSchedule{T}
+struct Linear{T} <: StepBased{T}
     initial::T
     final::T
     steps::Int
@@ -26,7 +30,7 @@ function Base.iterate(schedule::Linear{T}, (rate, step)::Tuple{T, Int}=(schedule
 end
 
 """
-    Burnin{T} <: LearningRateSchedule{T}
+    Burnin{T} <: TimeBased{T}
     Burnin(min::T, max::T, inflate::T, decay::T)
 
 A learning rate schedule with exponential inflation and exponential decay stages.
@@ -38,7 +42,7 @@ The rate starts at `min`, inflates exponentially to `max`, then decays exponenti
 - `inflate::T`: The inflation factor during stage 1.
 - `decay::T`: The decay factor during stage 2 (starts after max is reached).
 """
-struct Burnin{T} <: LearningRateSchedule{T}
+struct Burnin{T} <: TimeBased{T}
     min::T
     max::T
     inflate::T
@@ -65,7 +69,7 @@ function Base.iterate(schedule::Burnin{T}, (rate, stage)::Tuple{T, Int}=(schedul
 end
 
 """
-    BurninHyperbolic{T} <: LearningRateSchedule{T}
+    BurninHyperbolic{T} <: TimeBased{T}
     BurninHyperbolic(min::T, max::T, inflate::T, decay::T, floor::T)
 
 A learning rate schedule with exponential inflation and hyperbolic decay stages.
@@ -78,7 +82,7 @@ The rate starts at `min`, inflates exponentially to `max`, then decays hyperboli
 - `decay::T`: The decay factor during stage 2 (starts after max is reached).
 - `floor::T`: idk ask Ben or look at the code lol
 """
-struct BurninHyperbolic{T} <: LearningRateSchedule{T}
+struct BurninHyperbolic{T} <: TimeBased{T}
     min::T
     max::T
     inflate::T
