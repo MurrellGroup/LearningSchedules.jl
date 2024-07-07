@@ -5,6 +5,8 @@
 [![Build Status](https://github.com/MurrellGroup/LearningSchedules.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/MurrellGroup/LearningSchedules.jl/actions/workflows/CI.yml?query=branch%3Amain)
 [![Coverage](https://codecov.io/gh/MurrellGroup/LearningSchedules.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/MurrellGroup/LearningSchedules.jl)
 
+# NOTE: This branch is not registered yet. See https://github.com/MurrellGroup/LearningSchedules.jl/tree/old-version
+
 This Julia package provides learning rate schedule types for training deep learning models.
 
 # Examples
