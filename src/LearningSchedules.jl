@@ -73,6 +73,37 @@ function linear_decay_schedule(max_lr::Float32, min_lr::Float32, steps::Int)
     return LearningRateSchedule(max_lr, 1, f!)
 end
 
-export burnin_learning_schedule, next_rate, burnin_hyperbolic_schedule, linear_decay_schedule
+function linear_warmup_exp_decay(start_lr::Float32, max_lr::Float32, warmup_steps::Int, decay::Float32; min_lr::Float32=0.0f0)
+    increment = (max_lr - start_lr) / warmup_steps
+    
+    function f!(lrs::LearningRateSchedule)
+        if lrs.state == 1
+            # Linear warmup phase
+            lrs.lr = lrs.lr + increment
+            
+            # Check if we've reached max_lr
+            if lrs.lr >= max_lr
+                lrs.state = 2
+                lrs.lr = max_lr  # Ensure we don't overshoot
+            end
+        elseif lrs.state == 2
+            # Exponential decay phase
+            lrs.lr = lrs.lr * decay
+            
+            # Check if we've reached min_lr
+            if lrs.lr < min_lr
+                lrs.state = 3
+                lrs.lr = min_lr
+            end
+        end
+        
+        return lrs.lr
+    end
+    
+    return LearningRateSchedule(start_lr, 1, f!)
+end
+
+
+export burnin_learning_schedule, next_rate, burnin_hyperbolic_schedule, linear_decay_schedule, linear_warmup_exp_decay
 
 end
